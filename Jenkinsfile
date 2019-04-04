@@ -30,7 +30,7 @@ pipeline {
         }
         stage('bootstrap') {
             steps {
-                sh '''./bootstrap.sh'''
+                sh './bootstrap.sh'
             }
         }
         stage('test') {
@@ -38,11 +38,10 @@ pipeline {
                 dir('SyncIntegrationTests') {
                     sh 'pipenv install'
                     sh 'pipenv check'
-                    /* sh 'pipenv run pytest ' +
+                    sh 'pipenv run pytest ' +
                         '--color=yes ' +
                         '--junit-xml=results/junit.xml ' +
                         '--html=results/index.html'
-                    */
                 }
             }
         }
