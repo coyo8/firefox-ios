@@ -45,6 +45,32 @@ class DomainAutocompleteTests: KIFTestCase {
         BrowserUtils.ensureAutocompletionResult(tester(), textField: textField, prefix: "bar.baz", completion: ".org")
     }
 
+    func testAutocompleteAfterDeleteWithBackSpace() {
+        tester().tapView(withAccessibilityIdentifier: "url")
+        let textField = tester().waitForView(withAccessibilityLabel: "Address and Search") as! UITextField
+        tester().enterText(intoCurrentFirstResponder: "facebook")
+        tester().waitForAnimationsToFinish()
+
+        BrowserUtils.ensureAutocompletionResult(tester(), textField: textField, prefix: "facebook", completion: ".com")
+
+        // Remove the completion part .com
+        tester().enterText(intoCurrentFirstResponder: XCUIKeyboardKey.delete.rawValue)
+        tester().waitForAnimationsToFinish()
+
+        // Tap on Go to perform a search
+        EarlGrey.selectElement(with: grey_accessibilityLabel("Go")).perform(grey_tap())
+        tester().waitForAnimationsToFinish()
+        tester().wait(forTimeInterval: 1)
+
+        // Tap on the url to go back to the awesomebar results
+        tester().tapView(withAccessibilityIdentifier: "url")
+        tester().waitForAnimationsToFinish()
+
+        // Check that the awesome bar shows facebook. As a workaround it is needed to tap on the awesome bar otherwise can't get the value there, that is why it is checked facebook\u{7F} due to the copy options
+        tester().tapView(withAccessibilityIdentifier: "address")
+        EarlGrey.selectElement(with: grey_accessibilityID("address")).assert(grey_text("facebook\u{7F}"))
+    }
+
     override func tearDown() {
         super.tearDown()
         EarlGrey.selectElement(with: grey_accessibilityID("goBack")).perform(grey_tap())
