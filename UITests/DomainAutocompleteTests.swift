@@ -46,6 +46,7 @@ class DomainAutocompleteTests: KIFTestCase {
     }
 
     func testAutocompleteAfterDeleteWithBackSpace() {
+        tester().waitForAnimationsToFinish()
         tester().tapView(withAccessibilityIdentifier: "url")
         let textField = tester().waitForView(withAccessibilityLabel: "Address and Search") as! UITextField
         tester().enterText(intoCurrentFirstResponder: "facebook")
@@ -66,9 +67,9 @@ class DomainAutocompleteTests: KIFTestCase {
         tester().tapView(withAccessibilityIdentifier: "url")
         tester().waitForAnimationsToFinish()
 
-        // Check that the awesome bar shows facebook. As a workaround it is needed to tap on the awesome bar otherwise can't get the value there, that is why it is checked facebook\u{7F} due to the copy options
-        tester().tapView(withAccessibilityIdentifier: "address")
-        EarlGrey.selectElement(with: grey_accessibilityID("address")).assert(grey_text("facebook\u{7F}"))
+        let textField2 = tester().waitForView(withAccessibilityLabel: "Address and Search") as! UITextField
+        // Facebook word appears highlighted and so it is shown as facebook\u{7F} when extracting the value to compare
+        BrowserUtils.ensureAutocompletionResult(tester(), textField: textField2 , prefix: "", completion: "facebook\u{7F}")
     }
 
     override func tearDown() {
